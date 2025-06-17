@@ -1,7 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const openaiRoutes = require('./routes/openai')
+const openaiRoutesText = require('./routes/openai')
+const openaiRoutesSpeech = require('./routes/openai')
+
 
 dotenv.config();
 
@@ -10,7 +12,8 @@ app.use(cors());
 app.use(express.json());
 
 // calls openAI route
-app.use('/api', openaiRoutes)
+app.use('/api', openaiRoutesText)
+app.use('/api', openaiRoutesSpeech)
 
 
 
