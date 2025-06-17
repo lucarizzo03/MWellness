@@ -1,0 +1,1 @@
+MWellness is a student-focused wellness assistant powered by OpenAI. It provides 24/7 emotional and mental health support tailored to the University of Michigan community. Built with a Node.js backend and OpenAI’s GPT-4o model, the app helps students navigate stress, homesickness, burnout, and more through supportive, conversational AI.
