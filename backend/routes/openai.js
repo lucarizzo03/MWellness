@@ -5,7 +5,7 @@ const multer = require('multer') // handles file uploads
 const fs = require('fs') // imports nodes built in file system module
 const router = express.Router()
 
-const uploads = multer({dest: '/uploads'})
+const uploads = multer({dest: 'uploads/'})
 
 dotenv.config()
 
