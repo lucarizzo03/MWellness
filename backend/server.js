@@ -88,6 +88,37 @@ UserSchema.methods.matchPassword = async function (enteredPassword) {
 // calls openAI route
 app.use('/api', openaiRoutes)
 
+// USER Registration
+app.use('/register', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const user = new User({ email, password });
+        await user.save();
+        res.status(201).json({ message: 'User registered successfully' });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+})
+
+// USER Login
+app.use('/login', async (req, res) => {
+    const { email, password } = req.body
+    try {
+        const user = await User.find({ email });
+        if (user.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const isMatch = await user[0].matchPassword(password);
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+        res.status(200).json({ message: 'Login successful', userId: user[0]._id });
+    }
+    catch(err) {
+        res.status(500).json({ error: 'Login error' });
+    }
+})
+
 
 
 
