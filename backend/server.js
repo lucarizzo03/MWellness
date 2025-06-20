@@ -68,9 +68,6 @@ const chatSchema = new mongoose.Schema({
     }   
 })
 
-const User = mongoose.model('User', UserSchema);
-const Chat = mongoose.model('Chat', chatSchema);
-
 /// PASSWORD HASHING + COMPARING PASSWORDS ///
 UserSchema.pre('save', async function (next) {
     if (!this.isModified('password')) {
@@ -84,6 +81,9 @@ UserSchema.pre('save', async function (next) {
 UserSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password)
 }
+
+const User = mongoose.model('User', UserSchema);
+const Chat = mongoose.model('Chat', chatSchema);
 
 // calls openAI route
 app.use('/api', openaiRoutes)
@@ -102,24 +102,34 @@ app.use('/register', async (req, res) => {
 
 // USER Login
 app.use('/login', async (req, res) => {
-    const { email, password } = req.body
+    const { email, password } = req.body 
     try {
-        const user = await User.find({ email });
-        if (user.length === 0) {
+        const user = await User.findOne({ email });
+        if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        const isMatch = await user[0].matchPassword(password);
+        const isMatch = await user.matchPassword(password);
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
-        res.status(200).json({ message: 'Login successful', userId: user[0]._id });
+        res.status(200).json({ message: 'Login successful', userId: user._id });
     }
     catch(err) {
+        console.log(err)
         res.status(500).json({ error: 'Login error' });
     }
 })
 
 
+// User Chats
+app.use('/stored-chats', async (req, res) => {
+    try {
+        const chats = await Chat.find({ user: req.body.userId }).populate('user', 'email');
+        res.status(200).json(chats);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch chats' });
+    }
+})
 
 
 
